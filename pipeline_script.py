@@ -27,10 +27,31 @@ parser.add_argument(
     required=False,
 )
 
+parser.add_argument(
+    "--maps_path",
+    action="store",
+    dest="maps_path",
+    default="../../arena-rosnav/simulator_setup/maps",
+    help="The path where the maps are stored.",
+    required=False,
+)
+
+parser.add_argument(
+    "--records_path",
+    action="store",
+    dest="records_path",
+    default="../arena-evaluation/01_recording/project_recordings",
+    help="The path where the recordings of the simulations ran on the maps are stored.",
+    required=False,
+)
+
+
 args = parser.parse_args()
 
 num_maps = int(args.num_maps)
 num_settings = int(args.num_settings)
+maps_path = args.maps_path
+records_path = args.records_path
 
 #---------------------------------------------------
 # Create necessary directories #--------------------
@@ -44,12 +65,6 @@ local_maps.mkdir(parents=True, exist_ok=True)
 # Create local records folder if it does not exist
 local_records = Path(dirname) / "sims_data_records"
 local_records.mkdir(parents=True, exist_ok=True)
-
-#---------------------------------------------------
-# Set arena-rosnav paths ---------------------------
-
-maps_path = "../../arena-rosnav/simulator_setup/maps"
-records_path = "../arena-evaluation/01_recording/project_recordings"
 
 #---------------------------------------------------
 # Pipeline loop #-----------------------------------
