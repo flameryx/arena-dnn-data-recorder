@@ -66,6 +66,10 @@ local_maps.mkdir(parents=True, exist_ok=True)
 local_records = Path(dirname) / "sims_data_records"
 local_records.mkdir(parents=True, exist_ok=True)
 
+# Create local dnn input data folder if it does not exist
+dnn_input = Path(dirname) / "dnn_input_data"
+dnn_input.mkdir(parents=True, exist_ok=True)
+
 #---------------------------------------------------
 # Pipeline loop #-----------------------------------
 

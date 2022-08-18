@@ -59,7 +59,7 @@ class RecordedAverage:
         pathToImageFolder = args.image_path
         
         # stored the path where the output should be written to
-        outputPath = "{}/CSVaverages/".format(pathToCSV)
+        outputPath = "{}/".format(pathToCSV)
 
         # creates the output path in the file system in case it does not exist yet
         path = pl.Path(outputPath)
@@ -163,7 +163,8 @@ class RecordedAverage:
 
     def createDirectoryOutput(averagesData, outputPath):
 
-        outputPath = "{}data".format(outputPath)
+        #outputPath = "{}data".format(outputPath)
+        outputPath = "dnn_input_data"
         path = pl.Path(outputPath)
         path.mkdir(parents=True, exist_ok=True)
 
