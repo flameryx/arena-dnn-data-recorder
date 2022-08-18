@@ -26,6 +26,7 @@ parser.add_argument(
     help="How many different simulation settings you want to run on each map",
     required=False,
 )
+
 args = parser.parse_args()
 
 num_maps = int(args.num_maps)
@@ -47,8 +48,8 @@ local_records.mkdir(parents=True, exist_ok=True)
 #---------------------------------------------------
 # Set arena-rosnav paths ---------------------------
 
-maps_path = "../../../simulator_setup/maps"
-records_path = "../../../../forks/arena-evaluation/01_recording/project_recordings"
+maps_path = "../../arena-rosnav/simulator_setup/maps"
+records_path = "../arena-evaluation/01_recording/project_recordings"
 
 #---------------------------------------------------
 # Pipeline loop #-----------------------------------
