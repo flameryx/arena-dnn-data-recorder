@@ -13,11 +13,12 @@ map metrics are calcualted a saved and a new map with a new task is created.
 
 To be able to execute the pipeline script which creates the nessesary data you have to be on the navprediction branch of arena-rosnav.
 
-1. Install Arena-Rosnav by following the installtion guide the arena-rosnav [readme](https://github.com/ignc-research/arena-rosnav) of arena-rosnav
-2. Checkout to the navpredriction branch by running the command: `git checkout navprediction`
-3. Navigate to `/arena_ws`
-4. Update your workspace by running the command: `rosws update`
-5. Build workspace by running the command: `catkin_make`
+1. If not already: Install Arena-Rosnav by following the installtion guide the arena-rosnav [readme](https://github.com/ignc-research/arena-rosnav) of arena-rosnav
+2. Navigate to: `/arena_ws`
+3. Pull the current state: `git pull`
+4. Checkout to the navpredriction branch by running the command: `git checkout navprediction`
+5. Update your workspace by running the command: `rosws update`
+6. Build workspace by running the command: `catkin_make`
 
 ## Running the script and upload to cloud
 
