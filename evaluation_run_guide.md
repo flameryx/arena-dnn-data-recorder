@@ -14,16 +14,19 @@ map metrics are calcualted a saved and a new map with a new task is created.
 To be able to execute the pipeline script which creates the nessesary data you have to be on the navprediction branch of arena-rosnav.
 
 1. If not already: Install Arena-Rosnav by following the installtion guide the arena-rosnav [readme](https://github.com/ignc-research/arena-rosnav) of arena-rosnav
-2. Navigate to: `/arena_ws`
-3. Pull the current state: `git pull`
-4. Checkout to the navpredriction branch by running the command: `git checkout navprediction`
-5. Update your workspace by running the command: `rosws update`
-6. Build workspace by running the command: `catkin_make`
+2. Access rosnav env: `workon rosnav`
+3. Navigate to: `/arena_ws`
+4. Pull the current state: `git pull`
+5. Checkout to the navpredriction branch by running the command: `git checkout navprediction`
+6. Update your workspace by running the command: `rosws update`
+7. Build workspace by running the command: `catkin_make`
 
 ## Running the script and upload to cloud
 
-1. Navigate to the arena-dnn-data-recorder directory via the path: `arena_ws/src/forks/arena-dnn-data-recorder`
-2. Run the pipeline script: `python3 pipeline_script.py [--num_maps NUM_MAPS]` NUM_MAPS specifies the number of maps you want to generate and run simulations on. Default value is 10.
+1. Access rosnav env: `workon rosnav`
+2. Navigate to the arena-dnn-data-recorder directory via the path: `arena_ws/src/forks/arena-dnn-data-recorder`
+3. Intall the requirements: `pip install -r requirements.txt`
+4. Run the pipeline script: `python3 pipeline_script.py [--num_maps NUM_MAPS]` NUM_MAPS specifies the number of maps you want to generate and run simulations on. Default value is 10.
 
 After following these steps the pipeline script will start the simulation and create output data in the directorys: sims_data_records, maps, and 
 dnn_input_data. After the script has ended please zip the dnn_input_data directory and upload it to the [cloud](https://tubcloud.tu-berlin.de/s/M9NYDab8rNmW6fo) 
