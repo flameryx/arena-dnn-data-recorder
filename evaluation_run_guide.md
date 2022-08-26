@@ -15,11 +15,12 @@ To be able to execute the pipeline script which creates the nessesary data you h
 
 1. If not already: Install Arena-Rosnav by following the installtion guide the arena-rosnav [readme](https://github.com/ignc-research/arena-rosnav) of arena-rosnav
 2. Access rosnav env: `workon rosnav`
-3. Navigate to: `/arena_ws`
+3. Navigate to `/arena_ws/src/arena-rosnav`
 4. Pull the current state: `git pull`
 5. Checkout to the navpredriction branch by running the command: `git checkout navprediction`
 6. Update your workspace by running the command: `rosws update`
-7. Build workspace by running the command: `catkin_make`
+7. Navigate to `/arena_ws`
+8. Build workspace by running the command: `catkin_make`
 
 ## Running the script and upload to cloud
 
