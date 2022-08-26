@@ -14,8 +14,8 @@ map metrics are calcualted a saved and a new map with a new task is created.
 To be able to execute the pipeline script which creates the nessesary data you have to be on the navprediction branch of arena-rosnav.
 
 1. If Arena-Rosnav is not installed: Install Arena-Rosnav by following the installtion guide the arena-rosnav [readme](https://github.com/ignc-research/arena-rosnav) of arena-rosnav
-2. Navigate to: `arena_ws/src/forks` and check if `arena-dnn-data-recorder` is present. If not run `git clone https://github.com/flameryx/arena-dnn-data-recorder.git`
-3. Access rosnav env: `workon rosnav`
+2. Access rosnav env: `workon rosnav`
+3. Navigate to: `arena_ws/src/forks` and check if the directory `arena-dnn-data-recorder` is present. If not run `git clone https://github.com/flameryx/arena-dnn-data-recorder.git`
 4. Navigate to `/arena_ws/src/arena-rosnav`
 5. Pull the current state: `git pull`
 6. Checkout to the navpredriction branch by running the command: `git checkout navprediction`
