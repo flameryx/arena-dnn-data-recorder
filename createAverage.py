@@ -7,6 +7,7 @@ import pathlib as pl
 from argparse import ArgumentParser
 import yaml
 from yaml.loader import SafeLoader
+import math
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
@@ -14,8 +15,8 @@ class CSVFormat:
     
     robotList = ["burger", "jackal","ridgeback","agvota","rto","rto_real"]
     plannerList = ["teb","dwa","mpc","rlca","arena","rosnav"]
-    basicColumnList = ["time","done_reason","collision", "robot_radius", "robot_max_speed","number_dynamic_obs","number_static_obs"]
-    notUsedColumnList = ["laser_scan", "robot_lin_vel_x", "robot_lin_vel_y","robot_ang_vel","robot_orientation","robot_pos_x","robot_pos_y","action",
+    basicColumnList = ["time","done_reason","collision", "robot_radius", "robot_max_speed","number_dynamic_obs","number_static_obs","robot_pos_x","robot_pos_y"]
+    notUsedColumnList = ["laser_scan", "robot_lin_vel_x", "robot_lin_vel_y","robot_ang_vel","robot_orientation","action",
                    "episode", "form_dynamic_obs", "form_static_obs", 
                    "local_planner","robot_model","map"]
     arrayColumns = ["size_dynamic_obs", "speed_dynamic_obs","num_vertices_static_obs"]
@@ -176,7 +177,8 @@ class RecordedAverage:
                 episode_duration = row.loc["episode_duration"],
                 success_rate = row.loc["success_rate"],
                 collision_rate= row.loc["collision_rate"],
-                timeout_rate =row.loc["timeout_rate"]
+                timeout_rate =row.loc["timeout_rate"],
+                path_length = ["path_length"]
             )
     
             robot_metrics = dict(
@@ -362,8 +364,26 @@ class RecordedAverage:
         
         # one hot encoding local_planner"
         data[local_planner] = 1
-        
 
+        # calculating euclidean distance
+        
+        np_array = data[["robot_pos_x","robot_pos_y"]].to_numpy()
+        
+        sum = 0
+        for idx in range(len(np_array)):
+            if idx == 0:
+                continue
+            x1 = np_array[idx][0]
+            y1 = np_array[idx][1]
+    
+            x2 = np_array[idx-1][0]
+            y2 = np_array[idx-1][1]
+    
+            distance = math.sqrt(((x1-x2)**2) + ((y1-y2)**2))
+            sum = sum + distance 
+        
+        data["path_length"] = sum
+        data = data.drop(columns=["robot_pos_x","robot_pos_y"])
         # refactor speed_dynamic_obs
         dataFrame_Speed_dynamic_obs = RecordedAverage.extractArray(data, "speed_dynamic_obs")
         # Dropping speed_dynamic_obs out of Data Frame "data"
