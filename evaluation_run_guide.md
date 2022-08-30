@@ -32,12 +32,12 @@ To be able to execute the pipeline script which creates the nessesary data you h
 After following these steps the pipeline script will start the simulation and create output data in the directorys: sims_data_records, maps, and 
 dnn_input_data. After the script has ended please add the folders dnn_input_data, maps, sims_data_records to a folder following the naming convention: fristname_lastname. Then zip that folder and upload it to the [cloud](https://tubcloud.tu-berlin.de/s/M9NYDab8rNmW6fo).
 Your uploaded folder then should have this structure:
-
+```
 firstname_lastname.zip
     ├── dnn_input_data
     ├── sims_data_records
     ├── maps
-
+```
 ## Please Note
 
 - The pipeline script can be stopped and continued at any time.
