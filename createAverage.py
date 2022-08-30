@@ -49,6 +49,7 @@ class RecordedAverage:
     episodeAverages = pd.DataFrame()
     previousTimeValue = 0
     pathToImageFolder = None
+    curentEpisode = None
 
     def createAverages(args):
         averagesCSVOutput = pd.DataFrame()
@@ -250,6 +251,8 @@ class RecordedAverage:
     # creates a data frames which only contains the entries of one episode and calls the averageing function for that episode
     def createEpisodeAverage(data):
         fristEpisodeNr = data.loc[0][0]
+        global currentEpisode
+        currentEpisode = fristEpisodeNr
         # create copy of data
         dataSubsequentEpisode = data.copy()
         # create dataframe with only the frist episode
@@ -307,6 +310,12 @@ class RecordedAverage:
         # Drop unnecessary columns
         data = data.drop(columns=CSVFormat.returnNotUsedColumnList())
 
+        # delete first 4 rows because in episode 0 they contain faulty collisions
+        global currentEpisode
+        if(currentEpisode == 0):
+            N = 4
+            data = data.iloc[N: , :]
+
         # Checkng for DUPLICATE values
         data.drop_duplicates(keep='first', inplace = True)
 
@@ -320,9 +329,8 @@ class RecordedAverage:
         data["time"] = last_value - previousTimeValue
         previousTimeValue = last_value
 
-        # adds teh column timeout_rate
+        # adds the column timeout_rate
         data["timeout"] = 0
-
 
         # encoding drone_reason,  goal reached = 1, timeout = 0 
         contains_goal_reached = data['done_reason'].str.contains('\[\'goal reached\'\]').any()
@@ -331,6 +339,7 @@ class RecordedAverage:
         else:
             data['done_reason'] = 0
             data["timeout"] = 1
+            print("timeout has accured in episode", currentEpisode)
 
         # turn boolean values to numberical ones (true = 1, false = 0)
         data["collision"] = data["collision"].astype(int)
@@ -340,6 +349,7 @@ class RecordedAverage:
         if(exists_collision):
             data['done_reason'] = 0
             data["collision"] = 1
+            print("collision has accured in episode", currentEpisode)
 
         
         # creating new columns for the planner teb, dwa, mpc, rlca, arena, rosnav
