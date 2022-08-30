@@ -26,8 +26,9 @@ To be able to execute the pipeline script which creates the nessesary data you h
 
 1. Access rosnav env: `workon rosnav`
 2. Navigate to the arena-dnn-data-recorder directory via the path: `arena_ws/src/forks/arena-dnn-data-recorder`
-3. Intall the requirements: `pip install -r requirements.txt`
-4. Run the pipeline script: `python3 pipeline_script.py [--num_maps NUM_MAPS]` NUM_MAPS specifies the number of maps you want to generate and run simulations on. Default value is 10.
+3. Get the current state: `git pull`
+4. Intall the requirements: `pip install -r requirements.txt`
+5. Run the pipeline script: `python3 pipeline_script.py [--num_maps NUM_MAPS]` NUM_MAPS specifies the number of maps you want to generate and run simulations on. Default value is 10.
 
 After following these steps the pipeline script will start the simulation and create output data in the directorys: sims_data_records, maps, and 
 dnn_input_data. After the script has ended please add the folders dnn_input_data, maps, sims_data_records to a folder following the naming convention: fristname_lastname. Then zip that folder and upload it to the [cloud](https://tubcloud.tu-berlin.de/s/M9NYDab8rNmW6fo).
