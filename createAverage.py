@@ -151,7 +151,8 @@ class RecordedAverage:
         combinedDataFrame=combinedDataFrame.rename(columns={
             "time": "episode_duration",
             "done_reason": "success_rate",
-            "collision" :"collision_rate"
+            "collision" :"collision_rate",
+            "timeout": "timeout_rate"
             })
 
 
@@ -173,7 +174,8 @@ class RecordedAverage:
             performance_metrics = dict(
                 episode_duration = row.loc["episode_duration"],
                 success_rate = row.loc["success_rate"],
-                collision_rate= row.loc["collision_rate"]
+                collision_rate= row.loc["collision_rate"],
+                timeout_rate =row.loc["timeout_rate"]
             )
     
             robot_metrics = dict(
@@ -311,19 +313,24 @@ class RecordedAverage:
         # Drop NA's (rows with missing values)
         data.dropna(inplace=True,axis=1)
 
-        #adds the last time value as the value for time in all rows (when averaging the time value will be the last recorded time value)
+        # adds the last time value as the value for time in all rows (when averaging the time value will be the last recorded time value)
         global previousTimeValue
         last_value = data['time'].iat[-1]
-        #deducts the previousTimeValue of the previous episode so time will start at 0 again
+        # deducts the previousTimeValue of the previous episode so time will start at 0 again
         data["time"] = last_value - previousTimeValue
         previousTimeValue = last_value
 
-        # encoding rone_reason,  goal reached = 1, timeout = 0 
+        # adds teh column timeout_rate
+        data["timeout"] = 0
+
+
+        # encoding drone_reason,  goal reached = 1, timeout = 0 
         contains_goal_reached = data['done_reason'].str.contains('\[\'goal reached\'\]').any()
         if(contains_goal_reached):
             data['done_reason'] = 1
         else:
             data['done_reason'] = 0
+            data["timeout"] = 1
 
         # turn boolean values to numberical ones (true = 1, false = 0)
         data["collision"] = data["collision"].astype(int)
