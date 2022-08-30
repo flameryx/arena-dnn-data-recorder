@@ -4,4 +4,3 @@ progressbar
 tqdm
 imutils
 uuid
-yaml
