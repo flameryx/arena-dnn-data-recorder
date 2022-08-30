@@ -30,8 +30,13 @@ To be able to execute the pipeline script which creates the nessesary data you h
 4. Run the pipeline script: `python3 pipeline_script.py [--num_maps NUM_MAPS]` NUM_MAPS specifies the number of maps you want to generate and run simulations on. Default value is 10.
 
 After following these steps the pipeline script will start the simulation and create output data in the directorys: sims_data_records, maps, and 
-dnn_input_data. After the script has ended please zip the dnn_input_data directory and upload it to the [cloud](https://tubcloud.tu-berlin.de/s/M9NYDab8rNmW6fo) 
-following the naming convention: firstname_lastname_dnn_input_data.zip. In case you are uploading several zip folders you can add a number at the end. 
+dnn_input_data. After the script has ended please add the folders dnn_input_data, maps, sims_data_records to a folder following the naming convention: fristname_lastname. Then zip that folder and upload it to the [cloud](https://tubcloud.tu-berlin.de/s/M9NYDab8rNmW6fo).
+Your uploaded folder then should have this structure:
+
+firstname_lastname.zip
+    ├── dnn_input_data
+    ├── sims_data_records
+    ├── maps
 
 ## Please Note
 
