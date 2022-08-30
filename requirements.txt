@@ -4,3 +4,4 @@ progressbar
 tqdm
 imutils
 uuid
+numpy
