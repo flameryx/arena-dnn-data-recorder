@@ -7,6 +7,7 @@ import pathlib as pl
 from argparse import ArgumentParser
 import yaml
 from yaml.loader import SafeLoader
+import math
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
@@ -14,8 +15,8 @@ class CSVFormat:
     
     robotList = ["burger", "jackal","ridgeback","agvota","rto","rto_real"]
     plannerList = ["teb","dwa","mpc","rlca","arena","rosnav"]
-    basicColumnList = ["time","done_reason","collision", "robot_radius", "robot_max_speed","number_dynamic_obs","number_static_obs"]
-    notUsedColumnList = ["laser_scan", "robot_lin_vel_x", "robot_lin_vel_y","robot_ang_vel","robot_orientation","robot_pos_x","robot_pos_y","action",
+    basicColumnList = ["time","done_reason","collision", "robot_radius", "robot_max_speed","number_dynamic_obs","number_static_obs","robot_pos_x","robot_pos_y"]
+    notUsedColumnList = ["laser_scan", "robot_lin_vel_x", "robot_lin_vel_y","robot_ang_vel","robot_orientation","action",
                    "episode", "form_dynamic_obs", "form_static_obs", 
                    "local_planner","robot_model","map"]
     arrayColumns = ["size_dynamic_obs", "speed_dynamic_obs","num_vertices_static_obs"]
@@ -49,6 +50,7 @@ class RecordedAverage:
     episodeAverages = pd.DataFrame()
     previousTimeValue = 0
     pathToImageFolder = None
+    curentEpisode = None
 
     def createAverages(args):
         averagesCSVOutput = pd.DataFrame()
@@ -151,11 +153,12 @@ class RecordedAverage:
         combinedDataFrame=combinedDataFrame.rename(columns={
             "time": "episode_duration",
             "done_reason": "success_rate",
-            "collision" :"collision_rate"
+            "collision" :"collision_rate",
+            "timeout": "timeout_rate"
             })
 
 
-        csvFilename = "{}/CombinedAverages.csv".format(outputPath)
+        csvFilename = "dnn_input_data/CombinedAverages.csv"
         with open(csvFilename, 'a') as f:
             combinedDataFrame.to_csv(f, mode='a', header=f.tell()==0, index=False)
         RecordedAverage.createDirectoryOutput(combinedDataFrame, outputPath)
@@ -173,7 +176,9 @@ class RecordedAverage:
             performance_metrics = dict(
                 episode_duration = row.loc["episode_duration"],
                 success_rate = row.loc["success_rate"],
-                collision_rate= row.loc["collision_rate"]
+                collision_rate= row.loc["collision_rate"],
+                timeout_rate =row.loc["timeout_rate"],
+                path_length = ["path_length"]
             )
     
             robot_metrics = dict(
@@ -248,6 +253,8 @@ class RecordedAverage:
     # creates a data frames which only contains the entries of one episode and calls the averageing function for that episode
     def createEpisodeAverage(data):
         fristEpisodeNr = data.loc[0][0]
+        global currentEpisode
+        currentEpisode = fristEpisodeNr
         # create copy of data
         dataSubsequentEpisode = data.copy()
         # create dataframe with only the frist episode
@@ -305,25 +312,36 @@ class RecordedAverage:
         # Drop unnecessary columns
         data = data.drop(columns=CSVFormat.returnNotUsedColumnList())
 
+        # delete first 4 rows because in episode 0 they contain faulty collisions
+        global currentEpisode
+        if(currentEpisode == 0):
+            N = 4
+            data = data.iloc[N: , :]
+
         # Checkng for DUPLICATE values
         data.drop_duplicates(keep='first', inplace = True)
 
         # Drop NA's (rows with missing values)
         data.dropna(inplace=True,axis=1)
 
-        #adds the last time value as the value for time in all rows (when averaging the time value will be the last recorded time value)
+        # adds the last time value as the value for time in all rows (when averaging the time value will be the last recorded time value)
         global previousTimeValue
         last_value = data['time'].iat[-1]
-        #deducts the previousTimeValue of the previous episode so time will start at 0 again
+        # deducts the previousTimeValue of the previous episode so time will start at 0 again
         data["time"] = last_value - previousTimeValue
         previousTimeValue = last_value
 
-        # encoding rone_reason,  goal reached = 1, timeout = 0 
+        # adds the column timeout_rate
+        data["timeout"] = 0
+
+        # encoding drone_reason,  goal reached = 1, timeout = 0 
         contains_goal_reached = data['done_reason'].str.contains('\[\'goal reached\'\]').any()
         if(contains_goal_reached):
             data['done_reason'] = 1
         else:
             data['done_reason'] = 0
+            data["timeout"] = 1
+            print("timeout has accured in episode", currentEpisode)
 
         # turn boolean values to numberical ones (true = 1, false = 0)
         data["collision"] = data["collision"].astype(int)
@@ -333,6 +351,7 @@ class RecordedAverage:
         if(exists_collision):
             data['done_reason'] = 0
             data["collision"] = 1
+            print("collision has accured in episode", currentEpisode)
 
         
         # creating new columns for the planner teb, dwa, mpc, rlca, arena, rosnav
@@ -345,8 +364,26 @@ class RecordedAverage:
         
         # one hot encoding local_planner"
         data[local_planner] = 1
-        
 
+        # calculating euclidean distance
+        
+        np_array = data[["robot_pos_x","robot_pos_y"]].to_numpy()
+        
+        sum = 0
+        for idx in range(len(np_array)):
+            if idx == 0:
+                continue
+            x1 = np_array[idx][0]
+            y1 = np_array[idx][1]
+    
+            x2 = np_array[idx-1][0]
+            y2 = np_array[idx-1][1]
+    
+            distance = math.sqrt(((x1-x2)**2) + ((y1-y2)**2))
+            sum = sum + distance 
+        
+        data["path_length"] = sum
+        data = data.drop(columns=["robot_pos_x","robot_pos_y"])
         # refactor speed_dynamic_obs
         dataFrame_Speed_dynamic_obs = RecordedAverage.extractArray(data, "speed_dynamic_obs")
         # Dropping speed_dynamic_obs out of Data Frame "data"
