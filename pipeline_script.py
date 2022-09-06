@@ -40,7 +40,7 @@ parser.add_argument(
     "--records_path",
     action="store",
     dest="records_path",
-    default="../arena-evaluation/01_recording/project_recordings",
+    default="../arena-evaluation/01_recording/recordings",
     help="The path where the recordings of the simulations ran on the maps are stored.",
     required=False,
 )
