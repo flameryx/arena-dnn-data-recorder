@@ -1,3 +1,6 @@
+'''
+@author Ricardo Sosa Melo
+'''
 import os
 import glob
 from uuid import uuid4 as uuid

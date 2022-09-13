@@ -1,3 +1,6 @@
+'''
+@author Ricardo Sosa Melo
+'''
 import os
 from pathlib import Path
 from argparse import ArgumentParser
