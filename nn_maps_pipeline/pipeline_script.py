@@ -1,14 +1,30 @@
 import os
-import glob
-from uuid import uuid4 as uuid
 from pathlib import Path
 from argparse import ArgumentParser
-from random import randint, choice
-import cv2
+from random import randint
 
 # Create and parse cli arguments #------------------
 
 parser = ArgumentParser()
+
+parser.add_argument(
+    "--dataset",
+    action="store",
+    dest="dataset",
+    default="dataset",
+    help="How many maps do you want to create",
+    required=False,
+)
+
+parser.add_argument(
+    "--trained_model",
+    action="store",
+    dest="trained_model",
+    default="trained_model.h5",
+    help="How many maps do you want to create",
+    required=False,
+)
+
 parser.add_argument(
     "--num_maps",
     action="store",
@@ -31,7 +47,7 @@ parser.add_argument(
     "--maps_path",
     action="store",
     dest="maps_path",
-    default="../../arena-rosnav/simulator_setup/maps",
+    default="../../../arena-rosnav/simulator_setup/maps",
     help="The path where the maps are stored.",
     required=False,
 )
@@ -40,7 +56,7 @@ parser.add_argument(
     "--records_path",
     action="store",
     dest="records_path",
-    default="../arena-evaluation/01_recording/recordings",
+    default="../../arena-evaluation/01_recording/recordings",
     help="The path where the recordings of the simulations ran on the maps are stored.",
     required=False,
 )
@@ -52,6 +68,8 @@ num_maps = int(args.num_maps)
 num_settings = int(args.num_settings)
 maps_path = args.maps_path
 records_path = args.records_path
+dataset = args.dataset
+trained_model = args.trained_model
 
 #---------------------------------------------------
 # Create necessary directories #--------------------
@@ -70,39 +88,29 @@ local_records.mkdir(parents=True, exist_ok=True)
 dnn_input = Path(dirname) / "dnn_input_data"
 dnn_input.mkdir(parents=True, exist_ok=True)
 
+unfiltered_maps = Path(dirname) / "unfiltered_maps"
+unfiltered_maps.mkdir(parents=True, exist_ok=True)
+
+filtered_maps = Path(dirname) / "filtered_maps"
+filtered_maps.mkdir(parents=True, exist_ok=True)
+
 #---------------------------------------------------
-# Pipeline loop #-----------------------------------
+# Pipeline #-----------------------------------
 
-for i in range(num_maps):
-    
-    # Generate maps #-----------------------------------------
+# Generate maps #-----------------------------------------
+os.system(f"python3 gan.py --image_path {dataset} --output_path unfiltered_maps --map_num {num_maps} --trained_model {trained_model}")
+os.system(f"python3 filter.py --image_path unfiltered_maps --output_path filtered_maps")
+os.system(f"rm -rf unfiltered_maps")
+os.system(f"python3 create_yaml.py --image_path filtered_maps")
 
-    map_name = str(uuid())
-    width = randint(80, 150)
-    height = randint(80, 150)
-    map_type = choice(["indoor", "outdoor"])
-    num_maps_to_generate = 1
-    map_res = 0.5
-    iterations = randint(80, 200)
-    num_obstacles = randint(30, 60)
-    obstacle_size = 3
-    corridor_width = 3
+map_names = os.listdir("filtered_maps")
 
-    generate_maps_command = f"python3 cliMapGenerator.py --map_name {map_name} --width {width} --height {height} --map_type {map_type} --num_maps {num_maps_to_generate} --map_res {map_res} --save_path {maps_path} --iterations {iterations} --num_obstacles {num_obstacles} --obstacle_size {obstacle_size} --corridor_width {corridor_width}"
-    os.system(generate_maps_command)
-    
-    #---------------------------------------------------------
-    # Add padding to map image to 150x150 pixels #------------
-    
-    image_path = f"{maps_path}/{map_name}/{map_name}.png"
-    img_file = cv2.imread(image_path)
-    
-    width_padding = 150 - width
-    height_padding = 150 - height
-    image = cv2.copyMakeBorder(img_file, height_padding, 0, width_padding, 0, cv2.BORDER_CONSTANT)
-    
-    cv2.imwrite(image_path, image)
-    
+os.system(f"mv -v filtered_maps/* {maps_path}")
+os.system(f"rm -rf filtered_maps")
+#---------------------------------------------------------
+
+for map_name in map_names:
+        
     #---------------------------------------------------------
     # Run simulations and record data #-----------------------
 
