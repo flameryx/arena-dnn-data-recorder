@@ -126,7 +126,7 @@ class Gan:
         with tf.GradientTape() as gen_tape, tf.GradientTape() as dis_tape:
             generated_images = generatorModel(noise, training=True)
 
-            real_output = discriminatorModel(images, training=True)
+            real_output = discriminatorModel(images, training=False)
             fake_output = discriminatorModel(generated_images, training=False)
 
             gen_loss = self.lossGen(fake_output, crossEntropy)
