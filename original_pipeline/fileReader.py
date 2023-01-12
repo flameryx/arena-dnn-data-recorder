@@ -10,12 +10,14 @@ class Reader:
             print("Currently working on fileName",dir)
             print("")
             if(dir != "CSVaverages" and not(os.path.isdir(dir))):
-                os.system("python3 createAverage.py --csv_path {} --csv_name /{}/{}*csv --image_path {}".format(rootdir,dir,dir,image_path))
+                os.system("python3 createAverage_changed.py --csv_path {} --csv_name /{}/{}*csv --image_path {} --map_iterations 0".format(rootdir,dir,dir,image_path))
 
 if __name__ == "__main__":
     dirname = os.path.dirname(os.path.abspath(__file__))
     image_path = "{}/maps".format(dirname) 
     root_path = "{}/sims_data_records".format(dirname)
+
+# python3 fileReader --image_path /home/alex-ubuntu/notebook/diversemaps/run4/maps --root_dir /home/alex-ubuntu/notebook/diversemaps/run4/sims_data_records
 
     parser = ArgumentParser()
     parser.add_argument(
