@@ -77,10 +77,10 @@ dnn_input.mkdir(parents=True, exist_ok=True)
 #---------------------------------------------------
 # Pipeline loop #-----------------------------------
 
-planners = ["teb","rlca","mpc"] 
-robots =["burger", "jackal", "ridgeback", "agvota", "rto", "rto_real"]
-mapSizes = [50,70,90,120,140]
-mapIterationsList=[10,20,40,80]
+planners = ["dwa","teb"] 
+robots =["burger", "jackal", "rto"]
+mapSizes = [90,70] #[50,70,90,120,140]
+mapIterationsList=[20,40] #[10,20,40,80]
 
 for i in range(num_maps):
 

@@ -123,7 +123,7 @@ for i in range(num_maps):
     #---------------------------------------------------------
     # Run simulations and record data #-----------------------
 
-    planner = random.choice(["rosnav"])    
+    planner = random.choice(["dwa"])    
     robot = random.choice(["burger"])
     dyn_obs_velocity = 0.5
     dyn_obs_radius = 0.5
